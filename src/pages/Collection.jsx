@@ -7,7 +7,7 @@ import Productitem from '../Components/Productitem';
 
 const Collection = () => {
 
-   const {products}=useContext(ShopContext);
+   const {products, search,showSearch}=useContext(ShopContext);
 
    const [ShowFileter,setShowFilter]=useState(false);
 
@@ -15,6 +15,7 @@ const Collection = () => {
 
      const [category,setcategory]=useState([]);
      const [subCategory,setSubCategory]=useState([]);
+     const [sortType,setSortType]=useState('relavent');
 
      const toggleCategory=(e)=>{
 
@@ -42,6 +43,10 @@ const Collection = () => {
          const applyFilter=()=>{
         let productsCopy= products.slice();
 
+
+        if(showSearch && search){
+         productsCopy=productsCopy.filter(item=> item.name.toLowerCase().includes(search.toLowerCase()));
+        }
 
         if(category.length>0){
           productsCopy=productsCopy.filter(item=>category.includes(item.category));
@@ -87,8 +92,14 @@ const Collection = () => {
      useEffect(()=>{
 
       applyFilter();
-     },[category,subCategory])
+     },[category,subCategory,search,showSearch])
     
+
+     useEffect(()=>{
+
+      sortProduct();
+
+     },[sortType])
 
   return (
     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t'>
@@ -151,7 +162,7 @@ const Collection = () => {
                        <Title text1={'All'} text2={'COLLECTIONS'}/>
                        {/* product sort */}
 
-                       <select className='broder-2 border-gray-300 text-sm px-2  '>
+                       <select onChange={(e)=>setSortType(e.target.value)} className='broder-2 border-gray-300 text-sm px-2  '>
                         <option value="relavent">Sort by : Relavent</option>
                         <option value="low-high">Sort by : Low to High</option>
                         <option value="high-low">Sort by : High to Low</option>
