@@ -39,7 +39,7 @@ Gifts4Corporate is a leading provider of Branded merchandise, Custom uniform sol
         </div>
         <div className=''>
                <hr />
-                  <p className='py-5 text-sm text-center'> Copright 2025@ Gift4corp </p>
+                  <p className='py-5 text-sm text-center'> Copyright 2025 @ YourCampusMerch </p>
         </div>
     </div>
   )
