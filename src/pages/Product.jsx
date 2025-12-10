@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom'
 import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/assets';
 import RelatedProduct from '../Components/RelatedProduct';
+import PincodeChecker from '../Components/PincodeChecker';
+import { toast } from 'react-toastify';
 
 const Product = () => {
   const {productId} = useParams();
- const {products,currency,addToCart} = useContext(ShopContext);
+ const {products,currency,addToCart,cartItems} = useContext(ShopContext);
   
   const [productData,setProductData] = useState(false);
 
@@ -99,12 +101,58 @@ useEffect(() => {
       )}
 
       <button 
-        onClick={()=>addToCart(productData._id, productData.category === 'Apparels' ? size : '')} 
-        disabled={productData.quantity === 0}
-        className={`px-8 py-3 text-sm ${productData.quantity === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-black active:bg-gray-700'} text-white`}
+        onClick={()=>{
+          // Check if item is already at stock limit in cart
+          const sizeKey = productData.category === 'Apparels' ? size : 'default';
+          const currentQuantityInCart = cartItems[productData._id]?.[sizeKey] || 0;
+          
+          if(currentQuantityInCart >= productData.quantity) {
+            toast.error(`⚠️ No More Stock - Only ${productData.quantity} ${productData.quantity === 1 ? 'item' : 'items'} available`);
+            return;
+          }
+          
+          // Validate size selection for Apparels
+          if(productData.category === 'Apparels' && !size) {
+            toast.error('Please select a size');
+            return;
+          }
+          addToCart(productData._id, productData.category === 'Apparels' ? size : 'default');
+        }} 
+        disabled={(() => {
+          // Check if product is out of stock OR if cart already has max quantity
+          if(productData.quantity === 0) return true;
+          
+          const sizeKey = productData.category === 'Apparels' ? size : 'default';
+          const currentQuantityInCart = cartItems[productData._id]?.[sizeKey] || 0;
+          
+          return currentQuantityInCart >= productData.quantity;
+        })()}
+        className={`px-8 py-3 text-sm ${(() => {
+          if(productData.quantity === 0) return 'bg-gray-400 cursor-not-allowed';
+          
+          const sizeKey = productData.category === 'Apparels' ? size : 'default';
+          const currentQuantityInCart = cartItems[productData._id]?.[sizeKey] || 0;
+          
+          if(currentQuantityInCart >= productData.quantity) return 'bg-gray-400 cursor-not-allowed';
+          
+          return 'bg-black active:bg-gray-700';
+        })()} text-white`}
       >
-        {productData.quantity === 0 ? 'Sold Out' : 'Add to Cart'}
+        {(() => {
+          if(productData.quantity === 0) return 'Sold Out';
+          
+          const sizeKey = productData.category === 'Apparels' ? size : 'default';
+          const currentQuantityInCart = cartItems[productData._id]?.[sizeKey] || 0;
+          
+          if(currentQuantityInCart >= productData.quantity) return 'Out of Stock';
+          
+          return 'Add to Cart';
+        })()}
       </button>
+
+      {/* Pincode Checker */}
+      <PincodeChecker productWeight={0.5} />
+
       <hr className='mt-8 sm:w-4/5 ' />
       <div className='text-sm text-gray-500 mt-5 flex flex-col gap-1 '
       >

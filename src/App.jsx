@@ -1,36 +1,55 @@
-import React from 'react'
-import { Routes,Route } from 'react-router-dom'
-import Home from './pages/Home'
-import Collection from './pages/Collection'
-import About from './pages/About'
-import Contact from './pages/Contact'
-import Product from './pages/Product'
-import Cart from './pages/Cart'
-import Login from './pages/Login'
-import PlaceOrder from './pages/PlaceOrder'
-import Orders from './pages/Orders'
+import React, { Suspense, lazy } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import Navbar from './Components/Navbar'
 import Footer from './Components/Footer'
 import Searchbar from './Components/Searchbar'
-import { ToastContainer, toast } from 'react-toastify';
-import Verify from './pages/Verify'
-import Accesories from './pages/Accesories'
-import Lifestyle from './pages/Lifestyle'
-import Stationery from './pages/stationery'
-import Techgadgets from './pages/Techgadgets'
-import Eventsouvenir from './pages/Eventsouvenir'
-import Ecofriendly from './pages/Ecofriendly'
-import Giftcombos from './pages/Giftcombos'
-import Sportsfitness from './pages/Sportsfitness'
-import Homedorm from './pages/Homedorm'
-import Collegemerchandise from './pages/Collegemerchandise'
+import { ToastContainer } from 'react-toastify'
+
+// Lazy load page components for code splitting
+const Home = lazy(() => import('./pages/Home'))
+const Collection = lazy(() => import('./pages/Collection'))
+const About = lazy(() => import('./pages/About'))
+const Contact = lazy(() => import('./pages/Contact'))
+const Product = lazy(() => import('./pages/Product'))
+const Cart = lazy(() => import('./pages/Cart'))
+const Login = lazy(() => import('./pages/Login'))
+const PlaceOrder = lazy(() => import('./pages/PlaceOrder'))
+const Orders = lazy(() => import('./pages/Orders'))
+const Verify = lazy(() => import('./pages/Verify'))
+const Accesories = lazy(() => import('./pages/Accesories'))
+const Stationery = lazy(() => import('./pages/stationery'))
+const Techgadgets = lazy(() => import('./pages/Techgadgets'))
+const Eventsouvenir = lazy(() => import('./pages/Eventsouvenir'))
+const Ecofriendly = lazy(() => import('./pages/Ecofriendly'))
+const Giftcombos = lazy(() => import('./pages/Giftcombos'))
+const Sportsfitness = lazy(() => import('./pages/Sportsfitness'))
+const Collegemerchandise = lazy(() => import('./pages/Collegemerchandise'))
+
+// Loading component
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+  </div>
+)
 
 const App = () => {
   return (
     <div className='px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw] '>
-      <ToastContainer />
+      <ToastContainer 
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable
+        pauseOnHover={false}
+        limit={1}
+      />
       <Navbar />
       <Searchbar/>
+      <Suspense fallback={<LoadingFallback />}>
         <Routes>
                  <Route path='/' element={<Home />} />
                  <Route path='/collection'  element={<Collection/>} />
@@ -40,7 +59,6 @@ const App = () => {
                  <Route path='/product/:productId' element={<Product/>} />
                   <Route path='/category/apparel' element={<Collection/>} />
                  <Route path='/category/accessories' element={<Accesories/>} />
-                 <Route path='/category/lifestyle' element={<Lifestyle/>} />
                  <Route path='/category/stationery' element={<Stationery/>} />
                  <Route path='/category/accessories' element={<Accesories/>} />
                  <Route path='/category/tech-gadgets' element={<Techgadgets/>} />
@@ -48,7 +66,6 @@ const App = () => {
                  <Route path='/category/eco-friendly' element={<Ecofriendly/>} />
                  <Route path='/category/gift-combos' element={<Giftcombos/>} />
                  <Route path='/category/sports-fitness' element={<Sportsfitness/>} />
-                 <Route path='/category/home-dorm' element={<Homedorm/>} />
                 
                  <Route path='/cart' element={<Cart/>} />
                  <Route path='/Login' element={<Login/>} />
@@ -56,6 +73,7 @@ const App = () => {
                  <Route path='/Orders' element={<Orders/>} />
                  <Route  path='/verify' element={<Verify/>} />
         </Routes>
+      </Suspense>
    <Footer />
 
     </div>

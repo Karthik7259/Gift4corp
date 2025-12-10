@@ -35,7 +35,7 @@ const ShopContextProvider=(props)=>{
           }
           
           if(product.quantity === 0){
-            toast.error("Product is out of stock");
+            toast.error("⚠️ Out of Stock - This product is currently unavailable");
             return;
           }
           
@@ -52,7 +52,7 @@ const ShopContextProvider=(props)=>{
           
           // Check if adding one more would exceed available stock
           if(currentQuantity >= product.quantity){
-            toast.error(`Only ${product.quantity} items available in stock`);
+            toast.error(`⚠️ No More Stock - Only ${product.quantity} ${product.quantity === 1 ? 'item' : 'items'} available`);
             return;
           }
           
@@ -73,13 +73,26 @@ const ShopContextProvider=(props)=>{
 
     if(token){
       try{
-        await axios.post(backendURL+'/api/cart/add',{itemId,size: sizeKey},{headers:{token}});
+        const response = await axios.post(backendURL+'/api/cart/add',{itemId,size: sizeKey},{headers:{token}});
+        
+        if(response.data.success){
+          toast.success(response.data.message);
+        } else {
+          toast.error(response.data.message || 'Failed to add to cart');
+          // Rollback local cart if backend fails
+          setCartItems(structuredClone(cartItems));
+        }
 
       }catch(err){
-        console.log(err);
-        toast.error(err.message);
+        console.log('Add to cart error:', err);
+        const errorMessage = err.response?.data?.message || err.message || 'Failed to add to cart';
+        toast.error(errorMessage);
+        // Rollback local cart if backend fails
+        setCartItems(structuredClone(cartItems));
       }
-    } 
+    } else {
+      toast.success('Added to cart');
+    }
     }
 
 
@@ -163,6 +176,42 @@ try{
 
   } 
 
+  const getCartGST=()=>{
+      let apparelAmount=0;
+      let otherAmount=0;
+      
+      for(const items in cartItems){
+           let itemInfo=products.find(product=>product._id===items);
+           
+           if(!itemInfo) continue;
+               
+      for(const item in cartItems[items]){
+        try{
+               if(cartItems[items][item]>0){
+                    const itemTotal = itemInfo.price * cartItems[items][item];
+                    if(itemInfo.category === 'Apparels'){
+                      apparelAmount += itemTotal;
+                    } else {
+                      otherAmount += itemTotal;
+                    }
+               }
+        }catch(err){
+          console.log(err);
+        }
+      }
+      } 
+
+      const apparelGST = apparelAmount * 0.05; // 5% for Apparels
+      const otherGST = otherAmount * 0.18; // 18% for others
+      const totalGST = apparelGST + otherGST;
+
+      return {
+        apparelGST: Math.round(apparelGST * 100) / 100,
+        otherGST: Math.round(otherGST * 100) / 100,
+        totalGST: Math.round(totalGST * 100) / 100
+      };
+  }
+
 
 
   const [products,setProducts]=useState([]);
@@ -229,6 +278,7 @@ useEffect(()=>{
                 cartItems,addToCart,setCartItems,
                 getCartCount,updateQuantity,
                 getCartAmount,
+                getCartGST,
                 navigate,
                 backendURL,
                 token,

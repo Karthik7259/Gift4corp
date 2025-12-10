@@ -4,11 +4,17 @@ import Title from '../Components/Title';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import axios from 'axios';
+import TrackingModal from '../Components/TrackingModal';
+import { toast } from 'react-toastify';
+
 const Orders = () => {
 
   const {backendURL,token,currency}=useContext(ShopContext);
 
   const [orderData,setOrderData]=useState([]);
+  const [isTrackingModalOpen, setIsTrackingModalOpen] = useState(false);
+  const [currentTracking, setCurrentTracking] = useState(null);
+  const [loadingTracking, setLoadingTracking] = useState(false);
 
   const loadOrderData=async()=>{
         try{
@@ -23,6 +29,7 @@ const Orders = () => {
                  item['payment']=order.payment;
                  item['paymentMethod']=order.paymentMethod;
                  item['date']=order.date;
+                 item['orderId']=order._id; // Store order ID for tracking
                  allOrdersItems.push(item);
               })
 
@@ -35,6 +42,27 @@ const Orders = () => {
         }catch(err){
             console.log(err);
         }
+  }
+
+  const handleTrackOrder = async (orderId) => {
+    try {
+      setLoadingTracking(true);
+      const response = await axios.get(`${backendURL}/api/order/tracking/${orderId}`, {
+        headers: { token }
+      });
+      
+      if(response.data.success) {
+        setCurrentTracking(response.data.tracking);
+        setIsTrackingModalOpen(true);
+      } else {
+        toast.error('Tracking information not available');
+      }
+    } catch(err) {
+      console.log(err);
+      toast.error('Failed to fetch tracking details');
+    } finally {
+      setLoadingTracking(false);
+    }
   }
 
   useEffect(()=>{
@@ -78,7 +106,13 @@ const Orders = () => {
                <p className='min-w-2 h-2 rounded-full bg-green-500'></p>
                <p className='text-sm md:text-base'>{item.status}</p>
                </div>
-                      <button onClick={loadOrderData} className='border px-4 py-2 text-sm font-medium rounded-sm  '>Track Order</button>
+                      <button 
+                        onClick={() => handleTrackOrder(item.orderId)} 
+                        disabled={loadingTracking}
+                        className='border px-4 py-2 text-sm font-medium rounded-sm hover:bg-black hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed'
+                      >
+                        {loadingTracking ? 'Loading...' : 'Track Order'}
+                      </button>
         </div>
 
           </div>
@@ -87,6 +121,13 @@ const Orders = () => {
       ))
     }
    </div>
+
+   {/* Tracking Modal */}
+   <TrackingModal 
+     isOpen={isTrackingModalOpen}
+     onClose={() => setIsTrackingModalOpen(false)}
+     trackingData={currentTracking}
+   />
 
     </div>
   )

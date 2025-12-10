@@ -104,7 +104,7 @@ const ComingSoonComponent = () => {
             Continue Shopping
 
 
-            it will come soon
+          
           </Link>
         </motion.div>
       </motion.div>

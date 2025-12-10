@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 const PlaceOrder = () => {
 
  const [method,setMethod]=useState('cod');
-const {navigate, backendURL,token ,cartItems,setCartItems,getCartAmount,delivery_fee,products}=useContext(ShopContext);
+const {navigate, backendURL,token ,cartItems,setCartItems,getCartAmount,getCartGST,delivery_fee,products}=useContext(ShopContext);
  const [formData,setFormData]=useState({
    firstName:'',
    lastName:'',
@@ -23,6 +23,9 @@ const {navigate, backendURL,token ,cartItems,setCartItems,getCartAmount,delivery
    phone:''
  });
 
+ const [serviceability, setServiceability] = useState(null);
+ const [checkingServiceability, setCheckingServiceability] = useState(false);
+
 
  const onChangeHandler=(e)=>{
      const name=e.target.name;
@@ -30,6 +33,90 @@ const {navigate, backendURL,token ,cartItems,setCartItems,getCartAmount,delivery
 
      setFormData({...formData,[name]:value});
 
+     // Reset serviceability when zipcode changes
+     if(name === 'zipcode') {
+       setServiceability(null);
+     }
+   }
+
+   const checkServiceability = async () => {
+     if(!formData.zipcode || formData.zipcode.length !== 6) {
+       toast.error('Please enter a valid 6-digit pincode');
+       return;
+     }
+
+     setCheckingServiceability(true);
+     try {
+       // Calculate total weight using actual product weights
+       let totalWeight = 0;
+       for(const items in cartItems) {
+         for(const item in cartItems[items]) {
+           if(cartItems[items][item] > 0) {
+             const productData = products.find(product => product._id === items);
+             if(productData) {
+               // Product weight is in grams, convert to kg (default 400g if not set)
+               const itemWeight = (productData.weight || 400) / 1000;
+               totalWeight += cartItems[items][item] * itemWeight;
+             }
+           }
+         }
+       }
+
+       // Ensure minimum weight of 0.5kg for Shiprocket
+       totalWeight = Math.max(totalWeight, 0.5);
+
+       const response = await axios.post(backendURL + '/api/shiprocket/check-serviceability', {
+         pickup_postcode: '560070', // Bangalore warehouse pincode
+         delivery_postcode: formData.zipcode,
+         weight: totalWeight,
+         cod: method === 'cod' ? 1 : 0
+       });
+
+       if(response.data.success && response.data.data.data.available_courier_companies) {
+         const couriers = response.data.data.data.available_courier_companies;
+         if(couriers.length > 0) {
+           // Get the lowest shipping price courier
+           const lowestPriceCourier = couriers.reduce((min, courier) => 
+             courier.rate < min.rate ? courier : min
+           );
+           
+           const shippingFee = lowestPriceCourier.rate > 100 ? lowestPriceCourier.rate : 100;
+           
+           console.log('Selected courier:', {
+             name: lowestPriceCourier.courier_name,
+             rate: lowestPriceCourier.rate,
+             estimatedDays: lowestPriceCourier.estimated_delivery_days,
+             finalShippingFee: shippingFee
+           });
+           
+           setServiceability({
+             available: true,
+             estimated_days: lowestPriceCourier.estimated_delivery_days,
+             shipping_fee: shippingFee,
+             courier_name: lowestPriceCourier.courier_name,
+             actual_rate: lowestPriceCourier.rate
+           });
+           
+           const message = shippingFee > 100 
+             ? `Delivery available via ${lowestPriceCourier.courier_name}! Estimated ${lowestPriceCourier.estimated_delivery_days} days - ₹${shippingFee}`
+             : `Delivery available! Estimated ${lowestPriceCourier.estimated_delivery_days} days`;
+           
+           toast.success(message);
+         } else {
+           setServiceability({ available: false });
+           toast.error('Delivery not available to this pincode');
+         }
+       } else {
+         setServiceability({ available: false });
+         toast.error('Unable to check serviceability');
+       }
+     } catch(err) {
+       console.log(err);
+       toast.error('Error checking pincode availability');
+       setServiceability({ available: false });
+     } finally {
+       setCheckingServiceability(false);
+     }
    }
 
 
@@ -72,6 +159,18 @@ const {navigate, backendURL,token ,cartItems,setCartItems,getCartAmount,delivery
 
 const onSubmitHandler= async(e)=>{
     e.preventDefault(); 
+    
+      // Check if serviceability has been verified
+      if(!serviceability) {
+        toast.error('Please check delivery availability for your pincode first');
+        return;
+      }
+
+      if(!serviceability.available) {
+        toast.error('Delivery is not available to your pincode');
+        return;
+      }
+
       try{
          let orderItems=[]
          
@@ -88,12 +187,18 @@ const onSubmitHandler= async(e)=>{
          }
       }
 
+      const gstData = getCartGST();
+      
+      // Use shipping fee from serviceability check, or default to 100
+      const actualShippingFee = serviceability?.shipping_fee || 100;
+      const totalAmount = getCartAmount() + gstData.totalGST + actualShippingFee;
  
       let orderData={
          address:formData,
          items:orderItems,
          paymentMethod:method,
-         amount:getCartAmount()+delivery_fee,
+         amount:totalAmount,
+         shippingFee: actualShippingFee
       }
 
       switch(method){
@@ -164,6 +269,44 @@ const onSubmitHandler= async(e)=>{
                       <input required onChange={onChangeHandler} name='country' value={formData.country} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="text" placeholder='Country ' />
                  </div>
 
+                 {/* Pincode Check Button */}
+                 <button 
+                   type='button'
+                   onClick={checkServiceability}
+                   disabled={!formData.zipcode || checkingServiceability}
+                   className='bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all'
+                 >
+                   {checkingServiceability ? 'Checking...' : 'Check Delivery Availability'}
+                 </button>
+
+                 {/* Serviceability Status */}
+                 {serviceability && (
+                   <div className={`p-4 rounded-lg ${serviceability.available ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+                     {serviceability.available ? (
+                       <div className='flex items-center gap-2'>
+                         <span className='text-green-600 text-xl'>✓</span>
+                         <div>
+                           <p className='font-semibold text-green-700'>Delivery Available</p>
+                           <p className='text-sm text-green-600 mt-1'>Estimated delivery in {serviceability.estimated_days} days</p>
+                           <p className='text-sm text-gray-600 mt-1'>
+                             Shipping Fee: ₹{serviceability.shipping_fee}
+                             {serviceability.courier_name && serviceability.actual_rate > 100 && (
+                               <span className='text-xs text-gray-500 ml-2'>
+                                 (via {serviceability.courier_name})
+                               </span>
+                             )}
+                           </p>
+                         </div>
+                       </div>
+                     ) : (
+                       <div className='flex items-center gap-2'>
+                         <span className='text-red-600 text-xl'>✗</span>
+                         <p className='font-semibold text-red-700'>Delivery not available to this pincode</p>
+                       </div>
+                     )}
+                   </div>
+                 )}
+
  <input required onChange={onChangeHandler} name='phone' value={formData.phone} className='border border-gray-300 rounded py-1.5 px-3.5 w-full' type="number" placeholder='Phone' />
                  </div>
  
@@ -173,7 +316,7 @@ const onSubmitHandler= async(e)=>{
  
        <div className='mt-8 '>
               <div className='mt-8 min-w-80 '>
-                 <CartTotal />
+                 <CartTotal customShippingFee={serviceability?.shipping_fee || 100} />
               </div>
               <div className='mt-12'>
               <Title text1={'Payment'} text2={'Method'}/>

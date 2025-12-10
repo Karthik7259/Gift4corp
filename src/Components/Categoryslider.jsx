@@ -17,13 +17,11 @@ const categories = [
   { id: 1, name: "Apparel & Clothing", slug: "apparel", icon: <FaTshirt size={32} /> },
   { id: 2, name: "Accessories", slug: "accessories", icon: <FaHatCowboy size={32} /> },
   { id: 3, name: "Stationery & Academic Supplies", slug: "stationery", icon: <FaBook size={32} /> },
-  { id: 4, name: "Lifestyle & Utility Items", slug: "lifestyle", icon: <FaHome size={32} /> },
-  { id: 5, name: "Tech & Gadgets", slug: "tech-gadgets", icon: <FaPhoneAlt size={32} /> },
-  { id: 6, name: "Event & Souvenir Merchandise", slug: "event-souvenir", icon: <FaStar size={32} /> },
-  { id: 7, name: "Eco-Friendly & Sustainable Items", slug: "eco-friendly", icon: <FaLeaf size={32} /> },
-  { id: 8, name: "Gift Sets & Combos", slug: "gift-combos", icon: <FaGift size={32} /> },
-  { id: 9, name: "Sports & Fitness Merchandise", slug: "sports-fitness", icon: <FaRunning size={32} /> },
-  { id: 10, name: "Home & Dorm Essentials", slug: "home-dorm", icon: <FaBoxes size={32} /> },
+  { id: 4, name: "Tech & Gadgets", slug: "tech-gadgets", icon: <FaPhoneAlt size={32} /> },
+  { id: 5, name: "Event & Souvenir Merchandise", slug: "event-souvenir", icon: <FaStar size={32} /> },
+  { id: 6, name: "Eco-Friendly & Sustainable Items", slug: "eco-friendly", icon: <FaLeaf size={32} /> },
+  { id: 7, name: "Gift Sets & Combos", slug: "gift-combos", icon: <FaGift size={32} /> },
+  { id: 8, name: "Sports & Fitness Merchandise", slug: "sports-fitness", icon: <FaRunning size={32} /> },
 ];
 
 const Categoryslider = () => {
@@ -35,7 +33,7 @@ const Categoryslider = () => {
         Categories
       </h2>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 px-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 px-6">
         {categories.map((c) => (
           <div
             key={c.id}
