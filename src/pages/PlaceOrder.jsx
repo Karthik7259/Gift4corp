@@ -136,13 +136,27 @@ const {navigate, backendURL,token ,cartItems,setCartItems,getCartAmount,getCartG
           return;
        }
 
+       // Ensure amount is integer in paise
+       const amountInPaise = Math.round(order.amount);
+       console.log('Razorpay payment - Amount in paise:', amountInPaise);
+
        const options={
          key:import.meta.env.VITE_RAZORPAY_KEY_ID,
-         amount:order.amount,
-         currency:order.currency ,
-         description:'Order Payment',
-         order_id:order.id,
-         receipt:order.receipt,
+         amount: amountInPaise,
+         currency: order.currency,
+         name: 'YourCampusMerch',
+         description: 'Order Payment',
+         order_id: order.id,
+         receipt: order.receipt,
+         prefill: {
+            name: formData.firstName + ' ' + formData.lastName,
+            email: formData.email,
+            contact: formData.phone
+         },
+         notes: {
+            address: formData.street + ', ' + formData.city + ', ' + formData.state,
+            zipcode: formData.zipcode
+         },
          handler: async(response)=>{
              console.log('Razorpay payment response:', response);
              try{
@@ -173,15 +187,24 @@ const {navigate, backendURL,token ,cartItems,setCartItems,getCartAmount,getCartG
        }
 
        try {
+          console.log('Initializing Razorpay with options:', {
+             key: import.meta.env.VITE_RAZORPAY_KEY_ID ? 'Present' : 'Missing',
+             amount: amountInPaise,
+             currency: order.currency,
+             order_id: order.id
+          });
+
           const rzp=new window.Razorpay(options);
+          
           rzp.on('payment.failed', function (response){
              console.error('Payment failed:', response.error);
              toast.error(`Payment failed: ${response.error.description || 'Please try again'}`);
           });
+          
           rzp.open();
        } catch(err) {
           console.error('Razorpay initialization error:', err);
-          toast.error('Failed to open payment gateway. Please try again.');
+          toast.error('Failed to open payment gateway. Please try again or contact support.');
        }
 
    }
@@ -223,12 +246,21 @@ const onSubmitHandler= async(e)=>{
       // Use shipping fee from serviceability check, or default to 100
       const actualShippingFee = serviceability?.shipping_fee || 100;
       const totalAmount = getCartAmount() + gstData.totalGST + actualShippingFee;
+      
+      // Validate amount
+      if(!totalAmount || totalAmount <= 0) {
+         toast.error('Invalid order amount. Please check your cart.');
+         return;
+      }
+      
+      // Ensure amount has maximum 2 decimal places
+      const roundedAmount = Math.round(totalAmount * 100) / 100;
  
       let orderData={
          address:formData,
          items:orderItems,
          paymentMethod:method,
-         amount:totalAmount,
+         amount:roundedAmount,
          shippingFee: actualShippingFee
       }
 
