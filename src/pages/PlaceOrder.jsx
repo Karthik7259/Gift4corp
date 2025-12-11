@@ -129,6 +129,13 @@ const {navigate, backendURL,token ,cartItems,setCartItems,getCartAmount,getCartG
 
 
    const initPay=(order)=>{
+       // Check if Razorpay is loaded
+       if(!window.Razorpay) {
+          toast.error('Razorpay SDK not loaded. Please refresh the page.');
+          console.error('Razorpay SDK not loaded');
+          return;
+       }
+
        const options={
          key:import.meta.env.VITE_RAZORPAY_KEY_ID,
          amount:order.amount,
@@ -137,28 +144,45 @@ const {navigate, backendURL,token ,cartItems,setCartItems,getCartAmount,getCartG
          order_id:order.id,
          receipt:order.receipt,
          handler: async(response)=>{
-             console.log(response);
+             console.log('Razorpay payment response:', response);
              try{
                const {data}=await axios.post(backendURL+'/api/order/verifyRazorpay',{
                   response,
                },{headers:{token}})
 
                if(data.success){
+                  toast.success('Payment successful! Redirecting...');
                   setCartItems({});
                   navigate('/thank-you');
                }else{
-                  toast.error(data.message);
+                  toast.error(data.message || 'Payment verification failed');
                }
              }catch(err){
-               console.log(err);
-               toast.error(err.message);
+               console.error('Payment verification error:', err);
+               toast.error(err.response?.data?.message || err.message || 'Payment verification failed');
              }
+         },
+         modal: {
+            ondismiss: function() {
+               toast.info('Payment cancelled');
+            }
+         },
+         theme: {
+            color: '#F37254'
          }
        }
 
-
+       try {
           const rzp=new window.Razorpay(options);
-            rzp.open();
+          rzp.on('payment.failed', function (response){
+             console.error('Payment failed:', response.error);
+             toast.error(`Payment failed: ${response.error.description || 'Please try again'}`);
+          });
+          rzp.open();
+       } catch(err) {
+          console.error('Razorpay initialization error:', err);
+          toast.error('Failed to open payment gateway. Please try again.');
+       }
 
    }
 
@@ -227,18 +251,26 @@ const onSubmitHandler= async(e)=>{
             
          case 'razorpay':
             // api calls for razorpay
-            const responseRazorpay=await axios.post(backendURL+'/api/order/razorpay',orderData,{headers:{token}})
-            if(responseRazorpay.data.success){
-               initPay(responseRazorpay.data.order);
-               
+            try {
+               const responseRazorpay=await axios.post(backendURL+'/api/order/razorpay',orderData,{headers:{token}})
+               if(responseRazorpay.data.success){
+                  initPay(responseRazorpay.data.order);
+               } else {
+                  toast.error(responseRazorpay.data.message || 'Failed to initiate Razorpay payment');
+               }
+            } catch(razorpayErr) {
+               console.error('Razorpay initialization error:', razorpayErr);
+               const errorMessage = razorpayErr.response?.data?.message || razorpayErr.message || 'Failed to initiate payment';
+               toast.error(errorMessage);
             }
             break;
          default:
             break;
       }
       }catch(err){
-        console.log(err);
-
+        console.error('Order placement error:', err);
+        const errorMessage = err.response?.data?.message || err.message || 'Failed to place order';
+        toast.error(errorMessage);
       }
 }  
 
