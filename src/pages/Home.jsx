@@ -9,6 +9,7 @@ import WhyChooseUs from '../Components/WhyChooseUs'
 import Categoryslider from '../Components/Categoryslider'
 import ProductRating from '../Components/ProductRating'
 import CategoryShowcase from '../Components/CategoryShowcase'
+import BrandMarquee from '../Components/BrandMarquee'
 
 const Home = () => {
   return (
@@ -17,9 +18,12 @@ const Home = () => {
         <Hero/>
       </div>
       <CategoryShowcase/>
+      
       <FeaturedSlider/>
       <Categoryslider/>
       {/* <LastestCollection/> */}
+
+      <BrandMarquee/>
       <ProductRating/>
       {/* <BestSeller/> */}
       <WhyChooseUs/>

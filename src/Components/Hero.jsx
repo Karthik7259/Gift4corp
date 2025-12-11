@@ -68,11 +68,10 @@ const Hero = () => {
   }, []);
 
   return (
-    <div className='w-full flex flex-col sm:flex-row border border-gray-400 rounded-2xl overflow-hidden shadow-lg'>
+    <div className='w-full flex flex-col sm:flex-row border border-gray-400 rounded-2xl overflow-hidden shadow-lg '>
       
-
       {/* Hero Left Section - Text */}
-      <div className='w-full sm:w-1/2 flex items-center justify-center py-10 sm:py-0'> 
+      <div className='w-full sm:w-[35%] flex items-center justify-center py-10 sm:py-0'> 
         <div className='text-[#414141] px-8'> 
           <div className='flex items-center gap-2'>
             <p className='w-8 md:w-11 h-[2px] bg-[#414141]'></p>
@@ -99,7 +98,7 @@ const Hero = () => {
       <img
         src={slides[currentIndex].image}
         alt="hero"
-        className='w-full sm:w-1/2 transition-all duration-700'
+        className='w-full sm:w-[65%] h-full object-cover transition-all duration-700'
       />
 
     </div>

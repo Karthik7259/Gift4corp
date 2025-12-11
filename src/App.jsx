@@ -24,6 +24,8 @@ const Ecofriendly = lazy(() => import('./pages/Ecofriendly'))
 const Giftcombos = lazy(() => import('./pages/Giftcombos'))
 const Sportsfitness = lazy(() => import('./pages/Sportsfitness'))
 const Collegemerchandise = lazy(() => import('./pages/Collegemerchandise'))
+const Lifestyle = lazy(() => import('./pages/Lifestyle'))
+const ThankYou = lazy(() => import('./pages/ThankYou'))
 
 // Loading component
 const LoadingFallback = () => (
@@ -66,12 +68,14 @@ const App = () => {
                  <Route path='/category/eco-friendly' element={<Ecofriendly/>} />
                  <Route path='/category/gift-combos' element={<Giftcombos/>} />
                  <Route path='/category/sports-fitness' element={<Sportsfitness/>} />
+                 <Route path='/category/lifestyle' element={<Lifestyle/>} />
                 
                  <Route path='/cart' element={<Cart/>} />
                  <Route path='/Login' element={<Login/>} />
                  <Route path='/place-order' element={<PlaceOrder/>} />
                  <Route path='/Orders' element={<Orders/>} />
                  <Route  path='/verify' element={<Verify/>} />
+                 <Route path='/thank-you' element={<ThankYou/>} />
         </Routes>
       </Suspense>
    <Footer />

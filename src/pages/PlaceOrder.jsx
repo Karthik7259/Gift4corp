@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import Title from '../Components/Title.jsx';
 import CartTotal from '../Components/CartTotal';
 import { assets } from '../assets/assets';
@@ -25,6 +25,14 @@ const {navigate, backendURL,token ,cartItems,setCartItems,getCartAmount,getCartG
 
  const [serviceability, setServiceability] = useState(null);
  const [checkingServiceability, setCheckingServiceability] = useState(false);
+
+ // Check if user is logged in
+ useEffect(() => {
+   if(!token) {
+     toast.error('Please login to place an order');
+     navigate('/login');
+   }
+ }, [token, navigate]);
 
 
  const onChangeHandler=(e)=>{
@@ -136,9 +144,8 @@ const {navigate, backendURL,token ,cartItems,setCartItems,getCartAmount,getCartG
                },{headers:{token}})
 
                if(data.success){
-                  toast.success(data.message);
                   setCartItems({});
-                  navigate('/orders');
+                  navigate('/thank-you');
                }else{
                   toast.error(data.message);
                }
@@ -207,11 +214,8 @@ const onSubmitHandler= async(e)=>{
            const response=await axios.post(backendURL+'/api/order/place', orderData,{headers:{token}})
           
            if(response.data.success){
-            toast.success(response.data.message);
             setCartItems({});
-            navigate('/orders');
-            
-            
+            navigate('/thank-you');
            }else{
             toast.error(response.data.message);
            } 
@@ -240,7 +244,7 @@ const onSubmitHandler= async(e)=>{
 
 
   return (
-    <form onSubmit={onSubmitHandler} className='flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t '>
+    <form onSubmit={onSubmitHandler} className='flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 pb-16 min-h-[80vh] border-t '>
 {/*  ------------- leftside */}
                  <div className='flex flex-col gap-4 w-full sm:max-w-[480px] '>
  

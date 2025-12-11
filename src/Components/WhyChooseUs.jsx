@@ -1,13 +1,37 @@
 import React from "react";
-import { ShieldCheck, Truck, RefreshCcw, Leaf, BadgeCheck, CreditCard } from "lucide-react";
+import { Users, Award, TrendingUp, MessageCircle, Package, Truck } from "lucide-react";
 
 const items = [
-  { icon: <Truck size={34} />, title: "Fast Delivery", desc: "2–4 days anywhere in India" },
-  { icon: <BadgeCheck size={34} />, title: "Premium Quality", desc: "100% bio-washed cotton" },
-  { icon: <CreditCard size={34} />, title: "Secure Payment", desc: "SSL secured checkout" },
-  { icon: <RefreshCcw size={34} />, title: "Easy Returns", desc: "7-day return policy" },
-  { icon: <Leaf size={34} />, title: "Eco-Friendly", desc: "Made from BCI cotton" },
-  { icon: <ShieldCheck size={34} />, title: "Trusted Brand", desc: "10,000+ happy customers" },
+  { 
+    icon: <Award size={34} />, 
+    title: "7+ Years of Expertise", 
+    desc: "In Corporate & Promotional Gifting" 
+  },
+  { 
+    icon: <Users size={34} />, 
+    title: "Dedicated Team", 
+    desc: "Of young, professional, and creative minds" 
+  },
+  { 
+    icon: <TrendingUp size={34} />, 
+    title: "Marketing-Oriented", 
+    desc: "Gifting Suggestions" 
+  },
+  { 
+    icon: <MessageCircle size={34} />, 
+    title: "End-to-End Solutions", 
+    desc: "From ideation to delivery" 
+  },
+  { 
+    icon: <Package size={34} />, 
+    title: "Customization", 
+    desc: "Printing, packaging, personalization" 
+  },
+  { 
+    icon: <Truck size={34} />, 
+    title: "Pan-India Service", 
+    desc: "With timely deliveries" 
+  },
 ];
 
 const WhyChooseUs = () => {
@@ -17,7 +41,7 @@ const WhyChooseUs = () => {
         Why <span className="text-red-500">Choose Us?</span>
       </h2>
       <p className="text-center text-gray-600 max-w-xl mx-auto mb-12">
-        We focus on more than just fashion — we deliver value, comfort, and premium experience.
+        Trusted expertise in corporate gifting with end-to-end personalized solutions
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

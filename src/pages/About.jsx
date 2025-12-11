@@ -4,7 +4,7 @@ import { assets } from '../assets/assets';
 import NewsletteBox from '../Components/NewsletteBox';
 const About = () => {
   return (
-    <div>
+    <div className='pb-16'>
        <div className='text-2xl text-center pt-8 border-t '>
               <Title text1={'ABOUT'} text2={'US'} />
        </div>
