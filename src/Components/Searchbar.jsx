@@ -12,11 +12,11 @@ const Searchbar = () => {
 
 
      useEffect(()=>{
-       if(location.pathname.includes('Collection') ){
+       const path = location.pathname.toLowerCase();
+       // Enable search on collection and college merchandise pages
+       if(path.includes('collection') || path.includes('college')){
           setVisible(true);
-       }
-
-       else{
+       } else {
         setVisible(false);
        }
      },[location])

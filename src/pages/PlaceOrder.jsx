@@ -73,7 +73,7 @@ const {navigate, backendURL,token ,cartItems,setCartItems,getCartAmount,getCartG
        // Ensure minimum weight of 0.5kg for Shiprocket
        totalWeight = Math.max(totalWeight, 0.5);
 
-       const response = await axios.post(backendURL + '/api/shiprocket/check-serviceability', {
+       const response = await axios.post(backendURL + '/api/shipping/check-serviceability', {
          pickup_postcode: '560070', // Bangalore warehouse pincode
          delivery_postcode: formData.zipcode,
          weight: totalWeight,

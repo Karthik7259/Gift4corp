@@ -71,19 +71,19 @@ const Footer = () => {
             <h3 className='text-lg font-semibold mb-4 text-gray-800'>Policies</h3>
             <ul className='space-y-3'>
               <li>
-                <a href='#' className='text-gray-600 hover:text-gray-900 hover:translate-x-1 inline-block transition-all duration-200'>
+                <Link to='/privacy-policy' className='text-gray-600 hover:text-gray-900 hover:translate-x-1 inline-block transition-all duration-200'>
                   → Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href='#' className='text-gray-600 hover:text-gray-900 hover:translate-x-1 inline-block transition-all duration-200'>
+                <Link to='/terms-and-conditions' className='text-gray-600 hover:text-gray-900 hover:translate-x-1 inline-block transition-all duration-200'>
                   → Terms & Conditions
-                </a>
+                </Link>
               </li>
               <li>
-                <a href='#' className='text-gray-600 hover:text-gray-900 hover:translate-x-1 inline-block transition-all duration-200'>
+                <Link to='/returns-refunds' className='text-gray-600 hover:text-gray-900 hover:translate-x-1 inline-block transition-all duration-200'>
                   → Return & Refund
-                </a>
+                </Link>
               </li>
               <li>
                 <a href='#' className='text-gray-600 hover:text-gray-900 hover:translate-x-1 inline-block transition-all duration-200'>
@@ -96,6 +96,9 @@ const Footer = () => {
           {/* Contact Info */}
           <div>
             <h3 className='text-lg font-semibold mb-4 text-gray-800'>Get In Touch</h3>
+            <div className='mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 shadow-sm'>
+              Important: Call/WhatsApp <a className='font-semibold hover:underline' href='tel:+919620044401'>+91 9620044401</a> for customized merchandise orders.
+            </div>
             <ul className='space-y-3'>
               <li className='flex items-start gap-3 text-gray-600'>
                 <svg className='w-5 h-5 mt-0.5 flex-shrink-0 text-gray-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'>

@@ -17,5 +17,7 @@ export default defineConfig({
     },
     chunkSizeWarningLimit: 1000, // Increase limit to 1000 kB
     sourcemap: false, // Disable sourcemaps in production for smaller build
+    // Copy .htaccess to dist folder
+    copyPublicDir: true
   }
 })

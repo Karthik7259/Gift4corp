@@ -27,6 +27,9 @@ const Sportsfitness = lazy(() => import('./pages/Sportsfitness'))
 const Collegemerchandise = lazy(() => import('./pages/Collegemerchandise'))
 const Lifestyle = lazy(() => import('./pages/Lifestyle'))
 const ThankYou = lazy(() => import('./pages/ThankYou'))
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
+const TermsConditions = lazy(() => import('./pages/TermsConditions'))
+const ReturnsRefunds = lazy(() => import('./pages/ReturnsRefunds'))
 
 // Loading component
 const LoadingFallback = () => (
@@ -78,6 +81,9 @@ const App = () => {
                  <Route path='/order/:orderId' element={<OrderDetails/>} />
                  <Route  path='/verify' element={<Verify/>} />
                  <Route path='/thank-you' element={<ThankYou/>} />
+                 <Route path='/privacy-policy' element={<PrivacyPolicy/>} />
+                 <Route path='/terms-and-conditions' element={<TermsConditions/>} />
+                 <Route path='/returns-refunds' element={<ReturnsRefunds/>} />
         </Routes>
       </Suspense>
    <Footer />
