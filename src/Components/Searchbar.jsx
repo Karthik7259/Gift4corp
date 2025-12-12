@@ -14,8 +14,11 @@ const Searchbar = () => {
 
      useEffect(()=>{
        const path = location.pathname.toLowerCase();
-       // Enable search on home, collection, and college merchandise pages
-       if(path === '/' || path.includes('collection') || path.includes('college')){
+       // Enable search on home, collection, college merchandise, and all category pages
+       if(path === '/' || 
+          path.includes('collection') || 
+          path.includes('college') ||
+          path.includes('category/')){
           setVisible(true);
        } else {
         setVisible(false);

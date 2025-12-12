@@ -17,6 +17,8 @@ const Collection = () => {
      const [subCategory,setSubCategory]=useState([]);
      const [selectedColors,setSelectedColors]=useState([]);
      const [availableColors,setAvailableColors]=useState([]);
+     const [selectedBrands,setSelectedBrands]=useState([]);
+     const [availableBrands,setAvailableBrands]=useState([]);
      const [sortType,setSortType]=useState('relavent');
 
      const toggleCategory=(e)=>{
@@ -52,6 +54,15 @@ const Collection = () => {
         }
       }
 
+      const toggleBrand = (brand) => {
+        if(selectedBrands.includes(brand)){
+          setSelectedBrands(prev => prev.filter(item => item !== brand));
+        }
+        else{
+          setSelectedBrands(prev => [...prev, brand]);
+        }
+      }
+
          const applyFilter=()=>{
         let productsCopy= products.slice();
 
@@ -77,6 +88,13 @@ const Collection = () => {
             if(!item.color) return false;
             const productColor = item.color.toLowerCase();
             return selectedColors.some(color => productColor.includes(color.toLowerCase()));
+          });
+         }
+
+         if(selectedBrands.length>0){
+          productsCopy=productsCopy.filter(item => {
+            if(!item.brand) return false;
+            return selectedBrands.includes(item.brand);
           });
          }
 
@@ -117,7 +135,7 @@ const Collection = () => {
      useEffect(()=>{
 
       applyFilter();
-     },[category,subCategory,search,showSearch,products,selectedColors])
+     },[category,subCategory,search,showSearch,products,selectedColors,selectedBrands])
     
 
      useEffect(()=>{
@@ -129,6 +147,8 @@ const Collection = () => {
      useEffect(()=>{
       // Extract unique colors from products
       const colors = new Set();
+      const brands = new Set();
+      
       products.forEach(product => {
         if(product.color && product.color.trim() !== '' && 
            product.category === 'Apparels' && 
@@ -139,8 +159,17 @@ const Collection = () => {
             if(color) colors.add(color);
           });
         }
+        
+        // Extract brands
+        if(product.brand && product.brand.trim() !== '' && 
+           product.category === 'Apparels' && 
+           product.collegeMerchandise && product.collegeMerchandise.trim() !== ''){
+          brands.add(product.brand);
+        }
       });
+      
       setAvailableColors(Array.from(colors).sort());
+      setAvailableBrands(Array.from(brands).sort());
      },[products])
 
   return (
@@ -198,6 +227,26 @@ const Collection = () => {
                       {color}
                     </button>
                   ))}
+                 </div>
+            </div>
+
+          {/* Brand filter */}
+           <div className={`border border-gray-300 pl-5 py-3 my-5 ${ShowFileter ? '': 'hidden'} sm:block `}>
+                 <p className='mb-3 text-sm font-medium '>BRANDS</p>
+                 <div className='flex flex-wrap gap-2 text-sm font-light text-gray-700'>
+                  {availableBrands.length > 0 ? (
+                    availableBrands.map((brand, index) => (
+                      <button 
+                        key={index}
+                        onClick={() => toggleBrand(brand)}
+                        className={`px-3 py-1 border rounded ${selectedBrands.includes(brand) ? 'bg-gray-800 text-white' : 'bg-white text-gray-700'}`}
+                      >
+                        {brand}
+                      </button>
+                    ))
+                  ) : (
+                    <p className='text-gray-400 text-sm'>No brands available</p>
+                  )}
                  </div>
             </div>
          </div>

@@ -18,6 +18,8 @@ const Collegemerchandise = () => {
   const [selectedMerchandise, setSelectedMerchandise] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
   const [availableColors, setAvailableColors] = useState([]);
+  const [selectedBrands, setSelectedBrands] = useState([]);
+  const [availableBrands, setAvailableBrands] = useState([]);
   const [sortType, setSortType] = useState('relevant');
 
   // Fetch college merchandise list
@@ -67,6 +69,15 @@ const Collegemerchandise = () => {
     }
   };
 
+  // Toggle brand filter
+  const toggleBrand = (brand) => {
+    if (selectedBrands.includes(brand)) {
+      setSelectedBrands(prev => prev.filter(item => item !== brand));
+    } else {
+      setSelectedBrands(prev => [...prev, brand]);
+    }
+  };
+
   // Extract colors from product names
   const extractColors = () => {
     const colorMap = {
@@ -97,6 +108,7 @@ const Collegemerchandise = () => {
     };
 
     const colorsFound = [];
+    const brandsSet = new Set();
 
     Object.keys(colorMap).forEach(colorName => {
       const hasColor = products.some(product => {
@@ -113,7 +125,19 @@ const Collegemerchandise = () => {
       }
     });
 
+    // Extract brands
+    products.forEach(product => {
+      if (product.collegeMerchandise && 
+          product.collegeMerchandise.toLowerCase() !== 'none' && 
+          product.collegeMerchandise.trim() !== '' &&
+          product.brand && 
+          product.brand.trim() !== '') {
+        brandsSet.add(product.brand);
+      }
+    });
+
     setAvailableColors(colorsFound);
+    setAvailableBrands(Array.from(brandsSet).sort());
   };
 
   // Apply filters
@@ -148,6 +172,14 @@ const Collegemerchandise = () => {
         return selectedColors.some(color => 
           productName.includes(color.toLowerCase())
         );
+      });
+    }
+
+    // Filter by selected brands
+    if (selectedBrands.length > 0) {
+      productsCopy = productsCopy.filter(item => {
+        if (!item.brand) return false;
+        return selectedBrands.includes(item.brand);
       });
     }
 
@@ -186,7 +218,7 @@ const Collegemerchandise = () => {
   // Apply filter when dependencies change
   useEffect(() => {
     applyFilter();
-  }, [selectedMerchandise, selectedColors, search, showSearch, products]);
+  }, [selectedMerchandise, selectedColors, selectedBrands, search, showSearch, products]);
 
   // Sort when sort type changes
   useEffect(() => {
@@ -269,6 +301,30 @@ const Collegemerchandise = () => {
               ))
             ) : (
               <p className='text-gray-400 italic col-span-4 text-sm'>No colors found</p>
+            )}
+          </div>
+        </div>
+
+        {/* Brand Filter */}
+        <div className={`border border-gray-300 pl-5 py-3 my-6 ${showFilter ? '' : 'hidden'} sm:block`}>
+          <p className='mb-3 text-sm font-medium'>BRANDS</p>
+          <div className='flex flex-wrap gap-2 pr-5'>
+            {availableBrands.length > 0 ? (
+              availableBrands.map((brand, index) => (
+                <button
+                  key={index}
+                  onClick={() => toggleBrand(brand)}
+                  className={`px-3 py-1 border rounded text-sm ${
+                    selectedBrands.includes(brand) 
+                      ? 'bg-gray-800 text-white' 
+                      : 'bg-white text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  {brand}
+                </button>
+              ))
+            ) : (
+              <p className='text-gray-400 italic text-sm'>No brands found</p>
             )}
           </div>
         </div>
