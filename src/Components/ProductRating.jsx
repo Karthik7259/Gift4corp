@@ -166,11 +166,7 @@ const ProductRating = () => {
             >
               {/* Customer Info */}
               <div className='flex items-center gap-4 mb-4'>
-                <img
-                  src={review.image}
-                  alt={review.name}
-                  className='w-16 h-16 rounded-full object-cover border-2 border-gray-200'
-                />
+                {/* Removed customer image for text-only reviews */}
                 <div className='flex-1'>
                   <h3 className='font-semibold text-lg text-gray-800'>{review.name}</h3>
                   <p className='text-sm text-gray-500'>{review.college}</p>

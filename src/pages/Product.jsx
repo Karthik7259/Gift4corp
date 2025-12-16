@@ -140,7 +140,7 @@ useEffect(() => {
           <p>Select Size</p>
           <div className='flex gap-2 flex-wrap'>
             {
-              (hasSizeVariants ? productData.sizeVariants.map(v => v.size) : ['S', 'M', 'L', 'XL', 'XXL'].filter(s => productData.sizes && productData.sizes.includes(s))).map((item,index)=>{
+              (hasSizeVariants ? productData.sizeVariants.map(v => v.size) : ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'].filter(s => productData.sizes && productData.sizes.includes(s))).map((item,index)=>{
                 const variant = hasSizeVariants ? productData.sizeVariants.find(v => v.size === item) : null;
                 // For size variants, check individual size stock; otherwise check overall stock
                 const isOutOfStock = hasSizeVariants ? (variant && variant.quantity === 0) : (productData.quantity === 0);
