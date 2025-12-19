@@ -30,6 +30,8 @@ const ThankYou = lazy(() => import('./pages/ThankYou'))
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
 const TermsConditions = lazy(() => import('./pages/TermsConditions'))
 const ReturnsRefunds = lazy(() => import('./pages/ReturnsRefunds'))
+
+const ShippingPolicy = lazy(() => import('./pages/ShippingPolicy'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 
 // Loading component
@@ -89,6 +91,7 @@ const App = () => {
                    <Route path='/terms-and-conditions' element={<TermsConditions/>} />
                    <Route path='/returns-refunds' element={<ReturnsRefunds/>} />
                    <Route path='/forgot-password' element={<ForgotPassword/>} />
+                   <Route path='/shipping-policy' element={<ShippingPolicy/>} />
           </Routes>
         </Suspense>
       </div>

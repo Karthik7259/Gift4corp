@@ -86,9 +86,9 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href='#' className='text-gray-600 hover:text-gray-900 hover:translate-x-1 inline-block transition-all duration-200'>
+                <Link to='/shipping-policy' className='text-gray-600 hover:text-gray-900 hover:translate-x-1 inline-block transition-all duration-200'>
                   → Shipping Policy
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
