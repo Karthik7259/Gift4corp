@@ -4,12 +4,11 @@ import { ShopContext } from '../context/ShopContext';
 
 const CartTotal = ({ customShippingFee = null }) => {
 
-     const { currency,delivery_fee,getCartAmount,getCartGST} = useContext(ShopContext);
-     
-     const subtotal = getCartAmount();
-     const gstData = getCartGST();
-     const actualShippingFee = customShippingFee !== null ? customShippingFee : 100; // Default ₹100 shipping
-     const total = subtotal === 0 ? 0 : subtotal + gstData.totalGST + actualShippingFee;
+    const { currency, getCartAmount, getCartGST } = useContext(ShopContext);
+    const subtotal = getCartAmount();
+    const gstData = getCartGST();
+    const shippingFee = customShippingFee !== null ? customShippingFee : null;
+    const total = subtotal === 0 ? 0 : subtotal + gstData.totalGST + (shippingFee !== null ? shippingFee : 0);
 
 
   return (
@@ -30,10 +29,12 @@ const CartTotal = ({ customShippingFee = null }) => {
                  <p>{currency}{gstData.totalGST.toFixed(2)}</p>
                </div>
            )}
-           <div className='flex justify-between pb-2 border-b border-dashed border-gray-300'>
-             <p>Shipping Fee</p>
-             <p>{currency}{actualShippingFee.toFixed(2)}</p>
-           </div>
+           {shippingFee !== null && (
+             <div className='flex justify-between pb-2 border-b border-dashed border-gray-300'>
+               <p>Shipping Fee</p>
+               <p>{currency}{shippingFee.toFixed(2)}</p>
+             </div>
+           )}
            <div className='flex justify-between pt-2 text-base'>
                <b>Total</b>
                <b>{currency}{total.toFixed(2)}</b>

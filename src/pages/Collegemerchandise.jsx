@@ -229,12 +229,10 @@ const Collegemerchandise = () => {
     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t'>
       
       {/* Filter Section */}
-      <div className='min-w-60'>
-        <p onClick={() => setShowFilter(!showFilter)} className='my-2 text-xl flex items-center cursor-pointer gap-2'>
-          FILTERS
+      <div className='min-w-60 w-64 h-[500px] max-h-[80vh] overflow-y-auto border border-gray-200 rounded-lg p-2'>
+        <p onClick={() => setShowFilter(!showFilter)} className='my-2 text-xl flex items-center cursor-pointer gap-2'>FILTERS
           <img className={`h-3 sm:hidden ${showFilter ? 'rotate-90' : ''}`} src={assets.dropdown_icon} alt="" />
         </p>
-
         {/* College Merchandise Filter */}
         <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? '' : 'hidden'} sm:block`}>
           <p className='mb-3 text-sm font-medium'>COLLEGE MERCHANDISE</p>
@@ -257,74 +255,46 @@ const Collegemerchandise = () => {
             )}
           </div>
         </div>
-
         {/* Color Filter */}
-        <div className={`border border-gray-300 pl-5 py-3 my-6 ${showFilter ? '' : 'hidden'} sm:block`}>
+        <div className={`border border-gray-300 pl-5 py-3 my-5 ${showFilter ? '' : 'hidden'} sm:block`}>
           <p className='mb-3 text-sm font-medium'>COLORS</p>
-          <div className='grid grid-cols-4 gap-3 pr-5'>
+          <div className='flex flex-wrap gap-2 text-sm font-light text-gray-700'>
             {availableColors.length > 0 ? (
               availableColors.map((colorObj, index) => (
-                <div key={index} className='flex flex-col items-center gap-1'>
-                  <button
-                    onClick={() => {
-                      const event = { target: { value: colorObj.name } };
-                      toggleColor(event);
-                    }}
-                    className={`w-10 h-10 rounded-full border-2 transition-all duration-200 hover:scale-110 ${
-                      selectedColors.includes(colorObj.name) 
-                        ? 'border-black ring-2 ring-offset-2 ring-black' 
-                        : 'border-gray-300 hover:border-gray-500'
-                    }`}
-                    style={{ 
-                      backgroundColor: colorObj.hex,
-                      boxShadow: colorObj.name === 'White' ? 'inset 0 0 0 1px #e5e7eb' : 'none'
-                    }}
-                    title={colorObj.name}
-                  >
-                    {selectedColors.includes(colorObj.name) && (
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        className="h-5 w-5 mx-auto" 
-                        fill="none" 
-                        viewBox="0 0 24 24" 
-                        stroke={colorObj.name === 'White' || colorObj.name === 'Yellow' || colorObj.name === 'Cream' || colorObj.name === 'Beige' ? 'black' : 'white'}
-                        strokeWidth={3}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </button>
-                  <span className='text-[10px] text-center text-gray-600 leading-tight'>
-                    {colorObj.name}
-                  </span>
-                </div>
+                <button
+                  key={index}
+                  onClick={() => {
+                    const event = { target: { value: colorObj.name } };
+                    toggleColor(event);
+                  }}
+                  className={`px-3 py-1 border rounded ${selectedColors.includes(colorObj.name) ? 'bg-gray-800 text-white' : 'bg-white text-gray-700'}`}
+                  style={{ backgroundColor: colorObj.hex }}
+                  title={colorObj.name}
+                >
+                  {colorObj.name}
+                </button>
               ))
             ) : (
-              <p className='text-gray-400 italic col-span-4 text-sm'>No colors found</p>
+              <p className='text-gray-400 italic'>No colors found</p>
             )}
           </div>
         </div>
-
         {/* Brand Filter */}
-        <div className={`border border-gray-300 pl-5 py-3 my-6 ${showFilter ? '' : 'hidden'} sm:block`}>
+        <div className={`border border-gray-300 pl-5 py-3 my-5 ${showFilter ? '' : 'hidden'} sm:block`}>
           <p className='mb-3 text-sm font-medium'>BRANDS</p>
-          <div className='flex flex-wrap gap-2 pr-5'>
+          <div className='flex flex-wrap gap-2 text-sm font-light text-gray-700'>
             {availableBrands.length > 0 ? (
               availableBrands.map((brand, index) => (
                 <button
                   key={index}
                   onClick={() => toggleBrand(brand)}
-                  className={`px-3 py-1 border rounded text-sm ${
-                    selectedBrands.includes(brand) 
-                      ? 'bg-gray-800 text-white' 
-                      : 'bg-white text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className={`px-3 py-1 border rounded ${selectedBrands.includes(brand) ? 'bg-gray-800 text-white' : 'bg-white text-gray-700'}`}
                 >
                   {brand}
                 </button>
               ))
             ) : (
-              <p className='text-gray-400 italic text-sm'>No brands found</p>
+              <p className='text-gray-400 italic'>No brands found</p>
             )}
           </div>
         </div>

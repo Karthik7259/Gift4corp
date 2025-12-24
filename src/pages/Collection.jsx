@@ -193,9 +193,8 @@ const Collection = () => {
 
   return (
     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 pb-20 border-t'>
-      
-          {/* Filter Section */}
-         < div className='min-w-60'>
+      {/* Filter Section */}
+      <div className='min-w-60 w-64 h-[500px] max-h-[80vh] overflow-y-auto  border border-gray-200 rounded-lg p-2'>
             <p onClick={()=>setShowFilter(!ShowFileter)} className='my-2 text-xl flex items-center cursor-pointer gap-2 '>FILTERS
               <img  className={`h-3 sm:hidden ${ShowFileter ? 'rotate-90 ': ' '}`} src={assets.dropdown_icon} alt="" />
             </p>

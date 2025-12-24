@@ -17,7 +17,7 @@ const PincodeChecker = ({ productWeight = 0.5, onServiceabilityCheck = null }) =
 
     setChecking(true);
     try {
-      const response = await axios.post(backendURL + '/api/shiprocket/check-serviceability', {
+      const response = await axios.post(backendURL + '/api/shipping/check-serviceability', {
         pickup_postcode: '560070', // Bangalore warehouse pincode
         delivery_postcode: pincode,
         weight: productWeight,
@@ -27,22 +27,26 @@ const PincodeChecker = ({ productWeight = 0.5, onServiceabilityCheck = null }) =
       if (response.data.success && response.data.data.data.available_courier_companies) {
         const couriers = response.data.data.data.available_courier_companies;
         if (couriers.length > 0) {
-          const fastest = couriers.reduce((min, courier) => 
+          // Find the lowest price courier (for shipping fee)
+          const lowestPriceCourier = couriers.reduce((min, courier) =>
+            courier.rate < min.rate ? courier : min
+          );
+          const fastest = couriers.reduce((min, courier) =>
             courier.estimated_delivery_days < min.estimated_delivery_days ? courier : min
           );
+          const shippingFee = lowestPriceCourier.rate > 100 ? lowestPriceCourier.rate : 100;
           setResult({
             available: true,
-            days: fastest.estimated_delivery_days
+            days: fastest.estimated_delivery_days,
+            shipping_fee: shippingFee
           });
           toast.success(`Delivery available in ${fastest.estimated_delivery_days} days`);
-          
           if (onServiceabilityCheck) {
-            onServiceabilityCheck({ available: true });
+            onServiceabilityCheck({ available: true, shipping_fee: shippingFee });
           }
         } else {
           setResult({ available: false });
           toast.error('Delivery not available to this pincode');
-          
           if (onServiceabilityCheck) {
             onServiceabilityCheck({ available: false });
           }
@@ -101,7 +105,7 @@ const PincodeChecker = ({ productWeight = 0.5, onServiceabilityCheck = null }) =
                 <p className='text-green-600 mt-1'>
                   Expected delivery in <strong>{result.days} days</strong>
                 </p>
-                <p className='text-gray-600 text-xs mt-1'>Shipping Fee: ₹100</p>
+                <p className='text-gray-600 text-xs mt-1'>Shipping Fee: ₹{result.shipping_fee || 100}</p>
               </div>
             </div>
           ) : (

@@ -3,12 +3,23 @@ import { ShopContext } from '../context/ShopContext';
 import Title from '../Components/Title.jsx';
 import { assets } from '../assets/assets';
 import CartTotal from '../Components/CartTotal.jsx';
+import PincodeChecker from '../Components/PincodeChecker.jsx';
+
 
 const cart = () => {
+  const {products,currency,cartItems,updateQuantity,navigate}=useContext(ShopContext);
+  const [cartData,setCartData]=useState([]);
+  const [shippingFee, setShippingFee] = useState(null);
 
- const {products,currency,cartItems,updateQuantity,navigate}=useContext(ShopContext);
-
- const [cartData,setCartData]=useState([]);
+  // Redirect to home if cart is empty
+  useEffect(() => {
+    const hasItems = Object.values(cartItems).some(itemGroup =>
+      Object.values(itemGroup).some(qty => qty > 0)
+    );
+    if (!hasItems) {
+      navigate('/');
+    }
+  }, [cartItems, navigate]);
 
 
  useEffect(()=>{
@@ -112,15 +123,31 @@ const cart = () => {
           }
         </div>
 
-        <div className='flex justify-end my-20 '>
-            <div className='w-full sm:w-[450px] '>
-               <CartTotal/>
-               <div className='w-full text-end'>
-                    <button 
-                    onClick={() => navigate('/place-order')}
-                    className='bg-black text-white text-sm my-8 px-8 py-3  '>PROCEED TO CHECKOUT</button>
-               </div>
-              </div> 
+
+        <div className='flex flex-col items-end my-20 gap-4'>
+          <div className='w-full sm:w-[450px] mb-4'>
+            <PincodeChecker
+              productWeight={0.5}
+              onServiceabilityCheck={(result) => {
+                // If available and shipping fee is present, set it; else default to 100
+                if (result && result.available && result.shipping_fee) {
+                  setShippingFee(result.shipping_fee);
+                } else if (result && result.available) {
+                  setShippingFee(100);
+                } else {
+                  setShippingFee(null);
+                }
+              }}
+            />
+          </div>
+          <div className='w-full sm:w-[450px]'>
+            <CartTotal customShippingFee={shippingFee} />
+            <div className='w-full text-end'>
+              <button 
+                onClick={() => navigate('/place-order')}
+                className='bg-black text-white text-sm my-8 px-8 py-3'>PROCEED TO CHECKOUT</button>
+            </div>
+          </div>
         </div>
 
     </div>
